@@ -6,6 +6,25 @@ from sprites import *
 from tilemap import *
 
 
+# HUD functions
+def draw_player_health(surface, x, y, percentage):
+    if percentage < 0:
+        pct = 0
+    BAR_LENGTH = 100
+    BAR_HEIGHT = 20
+    fill = percentage * BAR_LENGTH
+    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
+    if percentage > 0.7:
+        color = GREEN
+    elif percentage > 0.4:
+        color = YELLOW
+    else:
+        color = RED
+    pg.draw.rect(surface, color, fill_rect)
+    pg.draw.rect(surface, WHITE, outline_rect, 2)
+
+
 class Game:
     def __init__(self):
         pg.init()
@@ -21,14 +40,15 @@ class Game:
         self.map = Map(path.join(game_folder, 'map3.txt'))
         self.player_spritesheet = Spritesheet(path.join(img_folder, PLAYER_IMG))
         self.mobs_spritesheet = Spritesheet(path.join(img_folder, MOBS_IMG))
+        self.fireball_img = pg.image.load(path.join(img_folder, FIREBALL_IMG)).convert_alpha()
         self.wall_img = pg.image.load(path.join(img_folder, WALL_IMG)).convert_alpha()
         self.wall_img = pg.transform.scale(self.wall_img, (TILESIZE, TILESIZE))
 
-    def new(self):
-        # initialize all variables and do all the setup for a new game
+    def new(self):  # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
+        self.projectiles = pg.sprite.Group()
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == '1':
@@ -39,7 +59,6 @@ class Game:
                     Mob(self, col, row)
         self.camera = Camera(self.map.width, self.map.height)
 
-
     def run(self):
         # game loop - set self.playing = False to end the game
         self.playing = True
@@ -49,7 +68,8 @@ class Game:
             self.update()
             self.draw()
 
-    def quit(self):
+    @staticmethod
+    def quit():
         pg.quit()
         sys.exit()
 
@@ -57,6 +77,20 @@ class Game:
         # update portion of the game loop
         self.all_sprites.update()
         self.camera.update(self.player)
+        # mobs hit player
+        hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
+        for hit in hits:
+            self.player.health -= MOB_DAMAGE
+            hit.vel = vec(0, 0)
+            if self.player.health <= 0:
+                self.playing = False
+        if hits:
+            self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
+        # projectile hit mobs
+        hits = pg.sprite.groupcollide(self.mobs, self.projectiles, False, True)
+        for hit in hits:
+            hit.health -= FIREBALL_DAMAGE
+            hit.vel = vec(-50, -50)
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -65,11 +99,15 @@ class Game:
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
 
     def draw(self):
-        pg.display.set_caption('{:.2f}'.format(self.clock.get_fps()))
+        pg.display.set_caption('Eventyr WIP - FPS: {:.2f}'.format(self.clock.get_fps()))
         self.screen.fill(BGCOLOR)
         # self.draw_grid()
         for sprite in self.all_sprites:
+            if isinstance(sprite, Mob):
+                sprite.draw_health_bar()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
+        # HUD functions
+        draw_player_health(self.screen, 10, 10, self.player.health / PLAYER_HEALTH)
         pg.display.flip()
 
     def events(self):

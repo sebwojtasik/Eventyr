@@ -1,25 +1,26 @@
 import pygame as pg
 from settings import *
-vec = pg.math.Vector2
 from tilemap import collide_hit_rect
+from random import uniform
+vec = pg.math.Vector2
 
 
 def collide_with_walls(sprite, group, dir):
     if dir == 'x':
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
         if hits:
-            if sprite.vel.x > 0:
+            if hits[0].rect.centerx > sprite.hit_rect.centerx:
                 sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
-            if sprite.vel.x < 0:
+            if hits[0].rect.centerx < sprite.hit_rect.centerx:
                 sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
             sprite.vel.x = 0
             sprite.hit_rect.centerx = sprite.pos.x
     if dir == 'y':
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
         if hits:
-            if sprite.vel.y > 0:
+            if hits[0].rect.centery > sprite.hit_rect.centery:
                 sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
-            if sprite.vel.y < 0:
+            if hits[0].rect.centery < sprite.hit_rect.centery:
                 sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2
             sprite.vel.y = 0
             sprite.hit_rect.centery = sprite.pos.y
@@ -54,6 +55,9 @@ class Player(pg.sprite.Sprite):
         self.hit_rect.center = self.rect.center
         self.vel = vec(0, 0)
         self.pos = vec(x, y) * TILESIZE
+        self.last_shot = 0
+        self.rot = 0
+        self.health = PLAYER_HEALTH
 
     def load_images(self):
         self.walk_down_frames = [self.game.player_spritesheet.get_image(41, 29, 56, 76),
@@ -132,6 +136,18 @@ class Player(pg.sprite.Sprite):
         # prevent from faster diagonal movement
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071
+        if keys[pg.K_SPACE]:
+            self.get_mouse_angle()
+            now = pg.time.get_ticks()
+            if now - self.last_shot > FIREBALL_RATE:
+                self.last_shot = now
+                dir = vec(1, 0).rotate(-self.rot)
+                pos = self.pos + FIREBALL_OFFSET.rotate(-self.rot)  # offset the fireball spawn point
+                Fireball(self.game, pos, dir)
+
+    def get_mouse_angle(self):  # calculate the angle between the character and the cursor
+        mousex, mousey = pg.mouse.get_pos()
+        self.rot = (vec(mousex, mousey) - self.game.player.pos - self.game.camera.pos).angle_to(vec(1, 0))
 
     def update(self):
         self.animate()
@@ -195,7 +211,7 @@ class Mob(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.mobs_spritesheet.get_image(8, 48, 47, 39)
+        self.image = game.mobs_spritesheet.get_image(8, 48, 47, 39).copy()
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.hit_rect = self.rect.copy()
@@ -205,10 +221,14 @@ class Mob(pg.sprite.Sprite):
         self.acc = vec(0, 0)
         self.rect.center = self.pos
         self.rot = 0
+        self.max_health = MOB_HEALTH
+        self.health = MOB_HEALTH
 
     def update(self):
         self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
-        # self.image = pg.transform.rotate(self.game.mob_img, self.rot)
+        # self.image = pg.transform.rotate(self.game.mob_img, self.rot) #  optional rotating of the mob toward the player
+        self.image = self.game.mobs_spritesheet.get_image(8, 48, 47, 39).copy()
+        self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.acc = vec(MOB_SPEED, 0).rotate(-self.rot)
@@ -220,6 +240,44 @@ class Mob(pg.sprite.Sprite):
         self.hit_rect.centery = self.pos.y
         collide_with_walls(self, self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
+        if self.health <= 0:
+            self.kill()
+
+    def draw_health_bar(self):
+        if self.health / self.max_health * 100 > 70:
+            col = GREEN
+        elif self.health / self.max_health * 100 > 40:
+            col = YELLOW
+        else:
+            col = RED
+        width = int(self.rect.width * self.health / self.max_health)
+        self.health_bar = pg.Rect(0, 0, width, 5)
+        if self.health < self.max_health:  # only draw once monster has less than 100 HP
+            pg.draw.rect(self.image, col, self.health_bar)
+            pg.draw.rect(self.image, BLACK, self.health_bar, 2)
+
+
+class Fireball(pg.sprite.Sprite):
+    def __init__(self, game, pos, dir):
+        self.groups = game.all_sprites, game.projectiles
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = game.fireball_img
+        self.image = pg.transform.scale(self.image, (int(TILESIZE * 0.25), int(TILESIZE * 0.25)))
+        self.rect = self.image.get_rect()
+        self.pos = vec(pos)
+        self.rect.center = vec(pos)
+        spread = uniform(-FIREBALL_SPREAD, FIREBALL_SPREAD)
+        self.vel = dir.rotate(spread) * FIREBALL_SPEED
+        self.spawn_time = pg.time.get_ticks()
+
+    def update(self):
+        self.pos += self.vel * self.game.dt
+        self.rect.center = self.pos
+        if pg.sprite.spritecollideany(self, self.game.walls):
+            self.kill()
+        if pg.time.get_ticks() - self.spawn_time > FIREBALL_LIFETIME:
+            self.kill()
 
 
 class Wall(pg.sprite.Sprite):

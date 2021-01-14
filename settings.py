@@ -1,3 +1,6 @@
+import pygame as pg
+vec = pg.math.Vector2
+
 # define some colors (R, G, B)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -22,9 +25,23 @@ GRIDHEIGHT = HEIGHT / TILESIZE
 WALL_IMG = 'tileGreen_39.png'
 
 # player settings
+PLAYER_HEALTH = 100
 PLAYER_SPEED = 250
 PLAYER_IMG = 'character.png'
+
+# fireball settings
+FIREBALL_IMG = 'fireball.png'
+FIREBALL_SPEED = 500
+FIREBALL_LIFETIME = 1000
+FIREBALL_RATE = 150
+FIREBALL_OFFSET = vec(15, 5)
+FIREBALL_SPREAD = 7
+FIREBALL_DAMAGE = 10
 
 # mob settings
 MOBS_IMG = 'mobs.png'
 MOB_SPEED = 175
+MOB_HEALTH = 100
+MOB_KNOCKBACK = 10
+
+MOB_DAMAGE = 5

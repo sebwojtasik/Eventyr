@@ -1,6 +1,6 @@
 import pygame as pg
 from settings import *
-from os import path
+vec = pg.math.Vector2
 
 
 def collide_hit_rect(one, two):
@@ -25,11 +25,13 @@ class Camera:
         self.camera = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
+        self.pos = vec(0, 0)
 
     def apply(self, entity):
         return entity.rect.move(self.camera.topleft)
 
     def update(self, target):
+        # move the camera with player
         x = -target.rect.x + int(WIDTH / 2)
         y = -target.rect.y + int(HEIGHT / 2)
 
@@ -38,4 +40,5 @@ class Camera:
         y = min(0, y)  # top
         x = max(-(self.width - WIDTH), x)  # right
         y = max(-(self.height - HEIGHT), y)  # bottom
+        self.pos = vec(x, y)
         self.camera = pg.Rect(x, y, self.width, self.height)
