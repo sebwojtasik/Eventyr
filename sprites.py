@@ -54,7 +54,7 @@ class Player(pg.sprite.Sprite):
         self.hit_rect = self.rect
         self.hit_rect.center = self.rect.center
         self.vel = vec(0, 0)
-        self.pos = vec(x, y) * TILESIZE
+        self.pos = vec(x, y)
         self.last_shot = 0
         self.rot = 0
         self.health = PLAYER_HEALTH
@@ -211,23 +211,34 @@ class Mob(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
+        self.load_images()
         self.image = game.mobs_spritesheet.get_image(8, 48, 47, 39).copy()
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.hit_rect = self.rect.copy()
         self.hit_rect.center = self.rect.center
-        self.pos = vec(x, y) * TILESIZE
+        self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.rect.center = self.pos
         self.rot = 0
         self.max_health = MOB_HEALTH
         self.health = MOB_HEALTH
+        self.current_frame = 0
+        self.last_update = 0
+
+    def load_images(self):
+        self.jump_frames = [self.game.mobs_spritesheet.get_image(8, 48, 47, 39).copy(),
+                     self.game.mobs_spritesheet.get_image(72, 52, 47, 35).copy(),
+                     self.game.mobs_spritesheet.get_image(132, 56, 55, 31).copy(),
+                     self.game.mobs_spritesheet.get_image(200, 52, 47, 35).copy()]
+        for frame in self.jump_frames:
+            frame.set_colorkey(WHITE)
 
     def update(self):
+        self.animate()
         self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
         # self.image = pg.transform.rotate(self.game.mob_img, self.rot) #  optional rotating of the mob toward the player
-        self.image = self.game.mobs_spritesheet.get_image(8, 48, 47, 39).copy()
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
@@ -242,6 +253,15 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = self.hit_rect.center
         if self.health <= 0:
             self.kill()
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        self.image = self.jump_frames[self.current_frame].copy()
+        if now - self.last_update > 200:
+            self.last_update = now
+            self.current_frame = (self.current_frame + 1) % len(self.jump_frames)
+            self.image = self.jump_frames[self.current_frame].copy()
+
 
     def draw_health_bar(self):
         if self.health / self.max_health * 100 > 70:
@@ -280,14 +300,14 @@ class Fireball(pg.sprite.Sprite):
             self.kill()
 
 
-class Wall(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.walls
+class Obstacle(pg.sprite.Sprite):
+    def __init__(self, game, x, y, width, height):
+        self.groups = game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = game.wall_img
-        self.rect = self.image.get_rect()
+        self.rect = pg.Rect(x, y, width, height)
         self.x = x
         self.y = y
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE
+        self.rect.x = x
+        self.rect.y = y

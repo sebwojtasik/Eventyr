@@ -5,7 +5,6 @@ from settings import *
 from sprites import *
 from tilemap import *
 
-
 # HUD functions
 def draw_player_health(surface, x, y, percentage):
     if percentage < 0:
@@ -22,7 +21,7 @@ def draw_player_health(surface, x, y, percentage):
     else:
         color = RED
     pg.draw.rect(surface, color, fill_rect)
-    pg.draw.rect(surface, WHITE, outline_rect, 2)
+    pg.draw.rect(surface, BLACK, outline_rect, 2)
 
 
 class Game:
@@ -32,31 +31,39 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         pg.key.set_repeat(500, 100)
+        pg.mouse.set_visible(False)  # hide the cursor
         self.load_data()
 
     def load_data(self):
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'img')
-        self.map = Map(path.join(game_folder, 'map3.txt'))
+        map_folder = path.join(game_folder, 'maps')
+        self.map = TiledMap(path.join(map_folder, 'world1.tmx'))
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()
         self.player_spritesheet = Spritesheet(path.join(img_folder, PLAYER_IMG))
         self.mobs_spritesheet = Spritesheet(path.join(img_folder, MOBS_IMG))
         self.fireball_img = pg.image.load(path.join(img_folder, FIREBALL_IMG)).convert_alpha()
         self.wall_img = pg.image.load(path.join(img_folder, WALL_IMG)).convert_alpha()
         self.wall_img = pg.transform.scale(self.wall_img, (TILESIZE, TILESIZE))
+        self.cursor = pg.image.load(path.join(img_folder, CURSOR_IMG)).convert_alpha()
+        self.cursor = pg.transform.scale(self.cursor, (int(TILESIZE * 0.5), int(TILESIZE * 0.5)))
 
     def new(self):  # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.projectiles = pg.sprite.Group()
-        for row, tiles in enumerate(self.map.data):
-            for col, tile in enumerate(tiles):
-                if tile == '1':
-                    Wall(self, col, row)
-                if tile == 'P':
-                    self.player = Player(self, col, row)
-                if tile == 'M':
-                    Mob(self, col, row)
+        for tile_object in self.map.tmxdata.objects:
+            if tile_object.name == 'player':
+                self.player = Player(self, tile_object.x, tile_object.y)
+            if tile_object.name == 'building':
+                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+            if tile_object.name == 'edge':
+                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+            if tile_object.name == 'slime':
+                print('slime')
+                Mob(self, tile_object.x, tile_object.y)
         self.camera = Camera(self.map.width, self.map.height)
 
     def run(self):
@@ -100,14 +107,15 @@ class Game:
 
     def draw(self):
         pg.display.set_caption('Eventyr WIP - FPS: {:.2f}'.format(self.clock.get_fps()))
-        self.screen.fill(BGCOLOR)
         # self.draw_grid()
+        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))  # draw map
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob):
-                sprite.draw_health_bar()
-            self.screen.blit(sprite.image, self.camera.apply(sprite))
+                sprite.draw_health_bar()  # draw mob healthbars
+            self.screen.blit(sprite.image, self.camera.apply(sprite))  # draw character
         # HUD functions
         draw_player_health(self.screen, 10, 10, self.player.health / PLAYER_HEALTH)
+        self.screen.blit(self.cursor, (pg.mouse.get_pos()))
         pg.display.flip()
 
     def events(self):

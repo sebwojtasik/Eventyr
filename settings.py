@@ -24,6 +24,8 @@ GRIDHEIGHT = HEIGHT / TILESIZE
 
 WALL_IMG = 'tileGreen_39.png'
 
+CURSOR_IMG = 'cursor.png'
+
 # player settings
 PLAYER_HEALTH = 100
 PLAYER_SPEED = 250
@@ -39,7 +41,7 @@ FIREBALL_SPREAD = 7
 FIREBALL_DAMAGE = 10
 
 # mob settings
-MOBS_IMG = 'mobs.png'
+MOBS_IMG = 'mobs_shadow.png'
 MOB_SPEED = 175
 MOB_HEALTH = 100
 MOB_KNOCKBACK = 10
