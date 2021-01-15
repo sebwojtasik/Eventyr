@@ -1,5 +1,6 @@
 import pygame
 from settings import *
+from random import choice
 from sprites import *
 
 
@@ -13,16 +14,17 @@ class Mob(pygame.sprite.Sprite):
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.hit_rect = self.rect.copy()
-        self.hit_rect.center = self.rect.center
         self.position = vec(x, y)
         self.velocity = vec(0, 0)
         self.acceleration = vec(0, 0)
         self.rect.center = self.position
+        self.hit_rect.center = self.rect.center
         self.rotation = 0
         self.max_health = MOB_HEALTH
         self.health = MOB_HEALTH
         self.current_frame = 0
         self.last_update = 0
+        self.speed = choice(MOB_SPEED)
 
     def load_images(self):
         self.jump_frames = [self.game.mobs_spritesheet.get_image(8, 48, 47, 39).copy(),
@@ -30,14 +32,23 @@ class Mob(pygame.sprite.Sprite):
                      self.game.mobs_spritesheet.get_image(132, 56, 55, 31).copy(),
                      self.game.mobs_spritesheet.get_image(200, 52, 47, 35).copy()]
 
+    def avoid_other_mobs(self):  # make mobs keep a distance from each other
+        for mob in self.game.mobs:
+            if mob != self:
+                distance = self.position - mob.position
+                if 0 < distance.length() < MOB_AVOID_RADIUS:
+                    self.acceleration += distance.normalize()
+
     def update(self):
         self.animate()
         self.rotation = (self.game.player.position - self.position).angle_to(vec(1, 0))
-        # self.image = pygame.transform.rotate(self.game.mob_img, self.rot) #  optional rotating of the mob toward the player
+        # self.image = pygame.transform.rotate(self.game.mob_img, self.rot) #  rotating of the mob toward the player
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.rect.center = self.position
-        self.acceleration = vec(MOB_SPEED, 0).rotate(-self.rotation)
+        self.acceleration = vec(1, 0).rotate(-self.rotation)
+        self.avoid_other_mobs()
+        self.acceleration.scale_to_length(self.speed)
         self.acceleration += self.velocity * -1
         self.velocity += self.acceleration * self.game.delta_time
         self.position += self.velocity * self.game.delta_time + 0.5 * self.acceleration * self.game.delta_time ** 2
