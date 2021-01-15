@@ -7,6 +7,7 @@ from player import *
 from obstacles import *
 from mobs import *
 from tilemap import *
+from items import *
 from hud import *
 
 
@@ -33,22 +34,29 @@ class Game:
         self.cursor = pygame.image.load(path.join(img_folder, CURSOR_IMG)).convert_alpha()
         self.cursor = pygame.transform.scale(self.cursor, (CURSOR_SIZE, CURSOR_SIZE))
         self.hearts_spritesheet = Spritesheet(path.join(img_folder, HEARTS_IMG), True)
+        self.item_images = {}
+        for item in ITEM_IMAGES:
+            self.item_images[item] = pygame.image.load(path.join(img_folder, ITEM_IMAGES[item])).convert_alpha()
+
 
     def new(self):  # initialize all variables and do all the setup for a new game
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.walls = pygame.sprite.Group()
         self.mobs = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
+        self.items = pygame.sprite.Group()
         for tile_object in self.map.tmxdata.objects:  # spawn all the game objects from map data
+            object_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
             if tile_object.name == 'player':
-                self.player = Player(self, tile_object.x, tile_object.y)
+                self.player = Player(self, object_center.x, object_center.y)
             if tile_object.name == 'building' or tile_object.name == 'edge':
                 Wall(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == 'tree':
                 Wall(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == 'slime':
-                print('slime')
                 Mob(self, tile_object.x, tile_object.y)
+            if tile_object.type == 'item':
+                Item(self, object_center, tile_object.name)
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
 
@@ -70,6 +78,12 @@ class Game:
         # update portion of the game loop
         self.all_sprites.update()
         self.camera.update(self.player)
+        # player hits items
+        hits = pygame.sprite.spritecollide(self.player, self.items, False)
+        for hit in hits:
+            if hit.name == 'health_potion' and self.player.health < self.player.max_health:
+                hit.kill()
+                self.player.add_health(HEALTH_POTION_AMOUNT)
         # mobs hit player
         hits = pygame.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:

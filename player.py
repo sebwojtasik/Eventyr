@@ -112,6 +112,11 @@ class Player(pygame.sprite.Sprite):
         collide_with_rectangles(self, self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
 
+    def add_health(self, amount):
+        self.health += amount
+        if self.health > self.max_health:
+            self.health = self.max_health
+
     def animate(self):
         now = pygame.time.get_ticks()
         if self.animation_state != 'idle':

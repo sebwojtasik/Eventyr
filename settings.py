@@ -12,7 +12,7 @@ YELLOW = (255, 255, 0)
 BROWN = (106, 55, 5)
 
 # game settings
-FULLSCREEN = True
+FULLSCREEN = False
 WIDTH = 1024
 HEIGHT = 768
 FPS = 60
@@ -43,16 +43,23 @@ PROJECTILE_DAMAGE = 10
 MOBS_IMG = 'mobs.png'
 MOB_SPEED = [80, 100, 120]
 MOB_HEALTH = 100
-MOB_KNOCKBACK = 2
+MOB_KNOCKBACK = 10
 MOB_AVOID_RADIUS = 50
 MOB_DAMAGE = 5
+
+# items
+ITEM_IMAGES = {'health_potion': 'health_potion.png'}
+HEALTH_POTION_AMOUNT = 20
+BOB_RANGE = 12
+BOB_SPEED = 0.25
 
 # layers
 OBSTACLE_LAYER = 1
 PLAYER_LAYER = 2
 PROJECTILE_LAYER = 1
 MOB_LAYER = 2
-EFFECTS_LAYER = 3
+EFFECTS_LAYER = 4
+ITEMS_LAYER = 1
 
 if FULLSCREEN:
     # TODO: find a cleaner way to enable fullscreen
