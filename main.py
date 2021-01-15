@@ -54,17 +54,19 @@ class Game:
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.projectiles = pg.sprite.Group()
-        for tile_object in self.map.tmxdata.objects:
+        for tile_object in self.map.tmxdata.objects:  # spawn all the game objects from map data
             if tile_object.name == 'player':
                 self.player = Player(self, tile_object.x, tile_object.y)
             if tile_object.name == 'building':
-                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+                Wall(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == 'edge':
-                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+                Wall(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+            if tile_object.name == 'tree':
+                Wall(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == 'slime':
-                print('slime')
                 Mob(self, tile_object.x, tile_object.y)
         self.camera = Camera(self.map.width, self.map.height)
+        self.draw_debug = False
 
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -113,6 +115,11 @@ class Game:
             if isinstance(sprite, Mob):
                 sprite.draw_health_bar()  # draw mob healthbars
             self.screen.blit(sprite.image, self.camera.apply(sprite))  # draw character
+            if self.draw_debug:
+                pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.hit_rect), 1)
+        if self.draw_debug:
+            for wall in self.walls:
+                pg.draw.rect(self.screen, RED, self.camera.apply_rect(wall.rect), 1)
         # HUD functions
         draw_player_health(self.screen, 10, 10, self.player.health / PLAYER_HEALTH)
         self.screen.blit(self.cursor, (pg.mouse.get_pos()))
@@ -126,6 +133,8 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
+                if event.key == pg.K_h:  # enable debug mode
+                    self.draw_debug = not self.draw_debug
 
     def show_start_screen(self):
         pass

@@ -262,7 +262,6 @@ class Mob(pg.sprite.Sprite):
             self.current_frame = (self.current_frame + 1) % len(self.jump_frames)
             self.image = self.jump_frames[self.current_frame].copy()
 
-
     def draw_health_bar(self):
         if self.health / self.max_health * 100 > 70:
             col = GREEN
@@ -285,6 +284,7 @@ class Fireball(pg.sprite.Sprite):
         self.image = game.fireball_img
         self.image = pg.transform.scale(self.image, (int(TILESIZE * 0.25), int(TILESIZE * 0.25)))
         self.rect = self.image.get_rect()
+        self.hit_rect = self.rect
         self.pos = vec(pos)
         self.rect.center = vec(pos)
         spread = uniform(-FIREBALL_SPREAD, FIREBALL_SPREAD)
@@ -300,7 +300,7 @@ class Fireball(pg.sprite.Sprite):
             self.kill()
 
 
-class Obstacle(pg.sprite.Sprite):
+class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y, width, height):
         self.groups = game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
