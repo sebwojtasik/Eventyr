@@ -14,10 +14,11 @@ class Player(pygame.sprite.Sprite):
         self.load_images()
         self.image = self.walk_right_frames[0]
         self.rect = self.image.get_rect()
-        self.hit_rect = self.rect
-        self.hit_rect.center = self.rect.center
         self.velocity = vec(0, 0)
         self.position = vec(x, y)
+        self.rect.center = self.position
+        self.hit_rect = self.rect
+        self.hit_rect.center = self.rect.center
         self.last_shot = 0
         self.rotation = 0
         self.health = PLAYER_HEALTH
@@ -26,38 +27,38 @@ class Player(pygame.sprite.Sprite):
         self.empty_heart = self.game.hearts_spritesheet.get_image(128, 8, 59, 51)
 
     def load_images(self):
-        self.walk_down_frames = [self.game.player_spritesheet.get_image(41, 29, 56, 76),
-                                  self.game.player_spritesheet.get_image(170, 33, 56, 73),
-                                  self.game.player_spritesheet.get_image(297, 29, 56, 76),
-                                  self.game.player_spritesheet.get_image(425, 33, 56, 73)]
-        self.walk_down_left_frames = [self.game.player_spritesheet.get_image(41, 157, 56, 76),
-                                 self.game.player_spritesheet.get_image(170, 161, 56, 73),
-                                 self.game.player_spritesheet.get_image(297, 157, 56, 76),
-                                 self.game.player_spritesheet.get_image(425, 161, 56, 73)]
-        self.walk_down_right_frames = [self.game.player_spritesheet.get_image(41, 285, 56, 76),
-                                      self.game.player_spritesheet.get_image(170, 289, 56, 73),
-                                      self.game.player_spritesheet.get_image(297, 285, 56, 76),
-                                      self.game.player_spritesheet.get_image(425, 289, 56, 73)]
-        self.walk_left_frames = [self.game.player_spritesheet.get_image(41, 413, 56, 76),
-                                 self.game.player_spritesheet.get_image(170, 417, 56, 73),
-                                 self.game.player_spritesheet.get_image(297, 413, 56, 76),
-                                 self.game.player_spritesheet.get_image(425, 417, 56, 73)]
-        self.walk_right_frames = [self.game.player_spritesheet.get_image(41, 541, 56, 76),
-                                  self.game.player_spritesheet.get_image(170, 545, 56, 73),
-                                  self.game.player_spritesheet.get_image(297, 541, 56, 76),
-                                  self.game.player_spritesheet.get_image(425, 545, 56, 73)]
-        self.walk_up_frames = [self.game.player_spritesheet.get_image(41, 669, 56, 76),
-                                  self.game.player_spritesheet.get_image(170, 673, 56, 73),
-                                  self.game.player_spritesheet.get_image(297, 669, 56, 76),
-                                  self.game.player_spritesheet.get_image(425, 673, 56, 73)]
-        self.walk_up_left_frames = [self.game.player_spritesheet.get_image(41, 797, 56, 76),
-                                  self.game.player_spritesheet.get_image(170, 801, 56, 73),
-                                  self.game.player_spritesheet.get_image(297, 797, 56, 76),
-                                  self.game.player_spritesheet.get_image(425, 801, 56, 73)]
-        self.walk_up_right_frames = [self.game.player_spritesheet.get_image(41, 925, 56, 76),
-                                    self.game.player_spritesheet.get_image(170, 929, 56, 73),
-                                    self.game.player_spritesheet.get_image(297, 925, 56, 76),
-                                    self.game.player_spritesheet.get_image(425, 929, 56, 73)]
+        self.walk_down_frames = [self.game.player_spritesheet.get_image(31, 29, 66, 76),
+                                 self.game.player_spritesheet.get_image(160, 33, 66, 76),
+                                 self.game.player_spritesheet.get_image(287, 29, 66, 76),
+                                 self.game.player_spritesheet.get_image(415, 33, 66, 76)]
+        self.walk_down_left_frames = [self.game.player_spritesheet.get_image(31, 157, 66, 76),
+                                 self.game.player_spritesheet.get_image(160, 161, 66, 76),
+                                 self.game.player_spritesheet.get_image(287, 157, 66, 76),
+                                 self.game.player_spritesheet.get_image(415, 161, 66, 76)]
+        self.walk_down_right_frames = [self.game.player_spritesheet.get_image(41, 285, 66, 76),
+                                      self.game.player_spritesheet.get_image(170, 289, 66, 76),
+                                      self.game.player_spritesheet.get_image(297, 285, 66, 76),
+                                      self.game.player_spritesheet.get_image(425, 289, 66, 76)]
+        self.walk_left_frames = [self.game.player_spritesheet.get_image(31, 413, 66, 76),
+                                 self.game.player_spritesheet.get_image(160, 417, 66, 76),
+                                 self.game.player_spritesheet.get_image(287, 413, 66, 76),
+                                 self.game.player_spritesheet.get_image(415, 417, 66, 76)]
+        self.walk_right_frames = [self.game.player_spritesheet.get_image(36, 541, 66, 76),
+                                  self.game.player_spritesheet.get_image(165, 545, 66, 76),
+                                  self.game.player_spritesheet.get_image(292, 541, 66, 76),
+                                  self.game.player_spritesheet.get_image(420, 545, 66, 76)]
+        self.walk_up_frames = [self.game.player_spritesheet.get_image(31, 669, 66, 76),
+                                  self.game.player_spritesheet.get_image(160, 673, 66, 76),
+                                  self.game.player_spritesheet.get_image(287, 669, 66, 76),
+                                  self.game.player_spritesheet.get_image(415, 673, 66, 76)]
+        self.walk_up_left_frames = [self.game.player_spritesheet.get_image(36, 797, 66, 76),
+                                    self.game.player_spritesheet.get_image(165, 801, 66, 76),
+                                    self.game.player_spritesheet.get_image(292, 797, 66, 76),
+                                    self.game.player_spritesheet.get_image(420, 801, 66, 76)]
+        self.walk_up_right_frames = [self.game.player_spritesheet.get_image(36, 925, 66, 76),
+                                    self.game.player_spritesheet.get_image(165, 929, 66, 76),
+                                    self.game.player_spritesheet.get_image(292, 925, 66, 76),
+                                    self.game.player_spritesheet.get_image(420, 929, 66, 76)]
 
     def get_keys(self):
         self.velocity = vec(0, 0)
