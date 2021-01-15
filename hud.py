@@ -1,18 +1,24 @@
-import pygame as pg
 from settings import *
+from sprites import *
 
 
-def draw_player_health(surface, x, y, percentage):
-    if percentage < 0:
-        percentage = 0
-    fill = percentage * HEALTH_BAR_LENGTH
-    outline_rect = pg.Rect(x, y, HEALTH_BAR_LENGTH, HEALTH_BAR_HEIGHT)
-    fill_rect = pg.Rect(x, y, fill, HEALTH_BAR_HEIGHT)
-    if percentage > 0.7:
-        color = GREEN
-    elif percentage > 0.4:
-        color = YELLOW
-    else:
-        color = RED
-    pg.draw.rect(surface, color, fill_rect)
-    pg.draw.rect(surface, BLACK, outline_rect, 2)
+def draw_player_health(surface, x, y, health, max_health, hearts_spritesheet):
+    full_heart = hearts_spritesheet.get_image(0, 8, 59, 51)
+    half_heart = hearts_spritesheet.get_image(64, 8, 59, 51)
+    empty_heart = hearts_spritesheet.get_image(128, 8, 59, 51)
+    empty_heart.set_alpha(150)
+    heart_rect = full_heart.get_rect()
+    if health < 0:
+        health = 0
+    half_hearts_total = health / 10
+    half_heart_exists = half_hearts_total - int(half_hearts_total) != 0
+
+    for heart in range(int(max_health / 10)):
+        heart_rect.x = x + 35 * heart
+        heart_rect.y = y
+        if int(half_hearts_total) > heart:
+            surface.blit(full_heart, heart_rect)
+        elif half_heart_exists and int(half_hearts_total) == heart:
+            surface.blit(half_heart, heart_rect)
+        else:
+            surface.blit(empty_heart, heart_rect)
