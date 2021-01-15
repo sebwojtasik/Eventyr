@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="48" tileheight="48" infinite="0" nextlayerid="5" nextobjectid="32">
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="48" tileheight="48" infinite="0" nextlayerid="5" nextobjectid="37">
  <tileset firstgid="1" source="../img/BrowserQuest.tsx"/>
  <layer id="1" name="Base" width="100" height="100">
   <data encoding="csv">
@@ -359,10 +359,10 @@
   </object>
   <object id="23" name="player" x="1496.79" y="2613.09" width="34" height="34"/>
   <object id="24" name="edge" x="2" y="-84.667" width="4824" height="100"/>
-  <object id="27" name="slime" x="2556" y="2086" width="26.6667" height="28"/>
-  <object id="28" name="slime" x="2606.67" y="2020" width="26.6667" height="28"/>
-  <object id="29" name="slime" x="2630.67" y="2110" width="26.6667" height="28"/>
-  <object id="30" name="slime" x="2688.67" y="1988" width="26.6667" height="28"/>
-  <object id="31" name="slime" x="2706.67" y="2072" width="26.6667" height="28"/>
+  <object id="27" name="slime" x="2553.33" y="2062" width="26.6667" height="28"/>
+  <object id="30" name="slime" x="2736" y="1986.67" width="26.6667" height="28"/>
+  <object id="31" name="slime" x="2593.34" y="2146.67" width="26.6667" height="28"/>
+  <object id="32" name="slime" x="2714" y="2118.67" width="26.6667" height="28"/>
+  <object id="36" name="slime" x="2614" y="1987.33" width="26.6667" height="28"/>
  </objectgroup>
 </map>

@@ -35,7 +35,7 @@ class Game:
         self.hearts_spritesheet = Spritesheet(path.join(img_folder, HEARTS_IMG), True)
 
     def new(self):  # initialize all variables and do all the setup for a new game
-        self.all_sprites = pygame.sprite.Group()
+        self.all_sprites = pygame.sprite.LayeredUpdates()
         self.walls = pygame.sprite.Group()
         self.mobs = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()

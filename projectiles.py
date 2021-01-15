@@ -6,6 +6,7 @@ vec = pygame.math.Vector2
 
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, game, pos, direction):
+        self._layer = PROJECTILE_LAYER
         self.groups = game.all_sprites, game.projectiles
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.game = game
