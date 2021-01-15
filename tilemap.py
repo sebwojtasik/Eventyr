@@ -1,7 +1,7 @@
-import pygame as pg
+import pygame
 from settings import *
 import pytmx
-vec = pg.math.Vector2
+vec = pygame.math.Vector2
 
 
 def collide_hit_rect(one, two):
@@ -24,18 +24,18 @@ class TiledMap:
                     if tile:
                         surface.blit(tile, (x * self.tmxdata.tilewidth, y * self.tmxdata.tileheight))
 
-    def make_map(self):
-        temp_surface = pg.Surface((self.width, self.height))
+    def make_map(self):  # make a temporary surface to draw the map on
+        temp_surface = pygame.Surface((self.width, self.height))
         self.render(temp_surface)
         return temp_surface
 
 
 class Camera:
     def __init__(self, width, height):
-        self.camera = pg.Rect(0, 0, width, height)
+        self.camera = pygame.Rect(0, 0, width, height)
         self.width = width
         self.height = height
-        self.pos = vec(0, 0)
+        self.position = vec(0, 0)
 
     def apply(self, entity):
         return entity.rect.move(self.camera.topleft)
@@ -53,5 +53,5 @@ class Camera:
         y = min(0, y)  # top
         x = max(-(self.width - WIDTH), x)  # right
         y = max(-(self.height - HEIGHT), y)  # bottom
-        self.pos = vec(x, y)
-        self.camera = pg.Rect(x, y, self.width, self.height)
+        self.position = vec(x, y)
+        self.camera = pygame.Rect(x, y, self.width, self.height)

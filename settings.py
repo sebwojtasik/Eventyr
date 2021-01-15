@@ -1,5 +1,5 @@
-import pygame as pg
-vec = pg.math.Vector2
+import pygame
+vec = pygame.math.Vector2
 
 # define some colors (R, G, B)
 WHITE = (255, 255, 255)
@@ -12,38 +12,46 @@ YELLOW = (255, 255, 0)
 BROWN = (106, 55, 5)
 
 # game settings
-WIDTH = 1024   # 16 * 64 or 32 * 32 or 64 * 16
-HEIGHT = 768  # 16 * 48 or 32 * 24 or 64 * 12
+FULLSCREEN = False
+WIDTH = 1024
+HEIGHT = 768
 FPS = 60
 TITLE = "Eventyr - WIP"
-BGCOLOR = BROWN
 
 TILESIZE = 48
-GRIDWIDTH = WIDTH / TILESIZE
-GRIDHEIGHT = HEIGHT / TILESIZE
-
-WALL_IMG = 'tileGreen_39.png'
-
+CURSOR_SIZE = 24
 CURSOR_IMG = 'cursor.png'
 
 # player settings
 PLAYER_HEALTH = 100
 PLAYER_SPEED = 250
 PLAYER_IMG = 'character.png'
+HEALTH_BAR_LENGTH = 100
+HEALTH_BAR_HEIGHT = 20
+HEARTS_IMG = 'hearts.png'
 
 # fireball settings
-FIREBALL_IMG = 'fireball.png'
-FIREBALL_SPEED = 500
-FIREBALL_LIFETIME = 1000
-FIREBALL_RATE = 150
-FIREBALL_OFFSET = vec(15, 5)
-FIREBALL_SPREAD = 7
-FIREBALL_DAMAGE = 10
+PROJECTILE_IMG = 'fireball.png'
+PROJECTILE_SPEED = 400
+PROJECTILE_LIFETIME = 1500
+PROJECTILE_RATE = 250
+PROJECTILE_OFFSET = vec(15, 5)
+PROJECTILE_SPREAD = 7
+PROJECTILE_DAMAGE = 10
 
 # mob settings
-MOBS_IMG = 'mobs_shadow.png'
-MOB_SPEED = 175
+MOBS_IMG = 'mobs.png'
+MOB_SPEED = 100
 MOB_HEALTH = 100
 MOB_KNOCKBACK = 10
 
 MOB_DAMAGE = 5
+
+if FULLSCREEN:
+    # TODO: find a cleaner way to enable fullscreen
+    pygame.init()
+    info_object = pygame.display.Info()
+
+    # game settings
+    WIDTH = info_object.current_w
+    HEIGHT = info_object.current_h
