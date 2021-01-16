@@ -46,6 +46,7 @@ MOB_HEALTH = 100
 MOB_KNOCKBACK = 10
 MOB_AVOID_RADIUS = 50
 MOB_DAMAGE = 5
+MOB_DETECT_RADIUS = 300
 
 # items
 ITEM_IMAGES = {'health_potion': 'health_potion.png'}

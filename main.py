@@ -54,7 +54,7 @@ class Game:
             if tile_object.name == 'tree':
                 Wall(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == 'slime':
-                Mob(self, tile_object.x, tile_object.y)
+                Mob(self, object_center.x, object_center.y)
             if tile_object.type == 'item':
                 Item(self, object_center, tile_object.name)
         self.camera = Camera(self.map.width, self.map.height)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="48" tileheight="48" infinite="0" nextlayerid="5" nextobjectid="38">
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="48" tileheight="48" infinite="0" nextlayerid="5" nextobjectid="39">
  <tileset firstgid="1" source="../img/BrowserQuest.tsx"/>
  <layer id="1" name="Base" width="100" height="100">
   <data encoding="csv">
@@ -359,11 +359,12 @@
   </object>
   <object id="23" name="player" x="1488" y="2592" width="48" height="48"/>
   <object id="24" name="edge" x="2" y="-84.667" width="4824" height="100"/>
-  <object id="27" name="slime" x="2553.33" y="2062" width="26.6667" height="28"/>
-  <object id="30" name="slime" x="2736" y="1986.67" width="26.6667" height="28"/>
-  <object id="31" name="slime" x="2606.67" y="2132" width="26.6667" height="28"/>
-  <object id="32" name="slime" x="2714" y="2118.67" width="26.6667" height="28"/>
-  <object id="36" name="slime" x="2614" y="1987.33" width="26.6667" height="28"/>
-  <object id="37" name="health_potion" type="item" x="1248" y="2592" width="48" height="48"/>
+  <object id="27" name="slime" x="2544" y="2064" width="48" height="48"/>
+  <object id="30" name="slime" x="2736" y="2064" width="48" height="46.67"/>
+  <object id="31" name="slime" x="2592" y="2160" width="48" height="48"/>
+  <object id="32" name="slime" x="2688" y="2160" width="48" height="47.83"/>
+  <object id="36" name="slime" x="2592" y="1968" width="48" height="48"/>
+  <object id="37" name="health_potion" type="item" x="2640" y="2064" width="48" height="48"/>
+  <object id="38" name="slime" x="2688" y="1968" width="48" height="46.67"/>
  </objectgroup>
 </map>

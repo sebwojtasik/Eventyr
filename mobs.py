@@ -26,6 +26,7 @@ class Mob(pygame.sprite.Sprite):
         self.current_frame = 0
         self.last_update = 0
         self.speed = choice(MOB_SPEED)
+        self.target = game.player
 
     def load_images(self):
         self.jump_frames = [self.game.mobs_spritesheet.get_image(8, 48, 47, 39).copy(),
@@ -42,22 +43,23 @@ class Mob(pygame.sprite.Sprite):
 
     def update(self):
         self.animate()
-        self.rotation = (self.game.player.position - self.position).angle_to(vec(1, 0))
-        # self.image = pygame.transform.rotate(self.game.mob_img, self.rot) #  rotating of the mob toward the player
-        self.image.set_colorkey(WHITE)
-        self.rect = self.image.get_rect()
-        self.rect.center = self.position
-        self.acceleration = vec(1, 0).rotate(-self.rotation)
-        self.avoid_other_mobs()
-        self.acceleration.scale_to_length(self.speed)
-        self.acceleration += self.velocity * -1
-        self.velocity += self.acceleration * self.game.delta_time
-        self.position += self.velocity * self.game.delta_time + 0.5 * self.acceleration * self.game.delta_time ** 2
-        self.hit_rect.centerx = self.position.x
-        collide_with_rectangles(self, self.game.walls, 'x')
-        self.hit_rect.centery = self.position.y
-        collide_with_rectangles(self, self.game.walls, 'y')
-        self.rect.center = self.hit_rect.center
+        target_distance = self.target.position - self.position
+        if target_distance.length_squared() < MOB_DETECT_RADIUS**2:
+            self.rotation = target_distance.angle_to(vec(1, 0))
+            # self.image = pygame.transform.rotate(self.image, self.rotation) #  rotating of the mob toward the player
+            self.image.set_colorkey(WHITE)
+            self.rect.center = self.position
+            self.acceleration = vec(1, 0).rotate(-self.rotation)
+            self.avoid_other_mobs()
+            self.acceleration.scale_to_length(self.speed)
+            self.acceleration += self.velocity * -1
+            self.velocity += self.acceleration * self.game.delta_time
+            self.position += self.velocity * self.game.delta_time + 0.5 * self.acceleration * self.game.delta_time ** 2
+            self.hit_rect.centerx = self.position.x
+            collide_with_rectangles(self, self.game.walls, 'x')
+            self.hit_rect.centery = self.position.y
+            collide_with_rectangles(self, self.game.walls, 'y')
+            self.rect.center = self.hit_rect.center
         if self.health <= 0:
             self.kill()
 
