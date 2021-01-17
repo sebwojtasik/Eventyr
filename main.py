@@ -34,12 +34,12 @@ class Game:
         self.dim_screen.fill((0, 0, 0, 120))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
-        self.player_spritesheet = Spritesheet(path.join(img_folder, PLAYER_IMG))
-        self.mobs_spritesheet = Spritesheet(path.join(img_folder, MOBS_IMG))
+        self.player_spritesheet = Spritesheet(path.join(img_folder, PLAYER_IMG), colorkey=WHITE)
+        self.mobs_spritesheet = Spritesheet(path.join(img_folder, MOBS_IMG), alpha=False, colorkey=BLACK)
         self.projectile_img = pygame.image.load(path.join(img_folder, PROJECTILE_IMG)).convert_alpha()
         self.cursor = pygame.image.load(path.join(img_folder, CURSOR_IMG)).convert_alpha()
         self.cursor = pygame.transform.scale(self.cursor, (CURSOR_SIZE, CURSOR_SIZE))
-        self.hearts_spritesheet = Spritesheet(path.join(img_folder, HEARTS_IMG), True)
+        self.hearts_spritesheet = Spritesheet(path.join(img_folder, HEARTS_IMG), True, colorkey=BLACK)
         # item loading
         self.item_images = {}
         for item in ITEM_IMAGES:
@@ -108,7 +108,7 @@ class Game:
         for hit in hits:
             if hit.name == 'health_potion' and self.player.health < self.player.max_health:
                 hit.kill()
-                self.player.add_health(HEALTH_POTION_AMOUNT)
+                self.player.heal_amount += HEALTH_POTION_AMOUNT
         # mobs hit player
         hits = pygame.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
@@ -147,10 +147,10 @@ class Game:
                 pygame.draw.rect(self.screen, RED, self.camera.apply_rect(wall.rect), 1)
         # HUD functions
         draw_player_health(self.screen, 10, 10, self.player.health, self.player.max_health, self.hearts_spritesheet)
-        self.screen.blit(self.cursor, (pygame.mouse.get_pos()))
         if self.paused:
             self.screen.blit(self.dim_screen, (0, 0))
             draw_text(self, 'Paused', self.title_font, 105, WHITE, WIDTH / 2, HEIGHT / 2, align='center')
+        self.screen.blit(self.cursor, (pygame.mouse.get_pos()))
         pygame.display.flip()
 
     def events(self):

@@ -26,6 +26,8 @@ class Player(pygame.sprite.Sprite):
         self.max_health = PLAYER_HEALTH
         self.full_heart = self.game.hearts_spritesheet.get_image(0, 8, 59, 51)
         self.empty_heart = self.game.hearts_spritesheet.get_image(128, 8, 59, 51)
+        self.last_heal = 0
+        self.heal_amount = 0
 
     def load_images(self):
         self.walk_down_frames = [self.game.player_spritesheet.get_image(31, 29, 66, 76),
@@ -88,13 +90,16 @@ class Player(pygame.sprite.Sprite):
         if self.velocity.x != 0 and self.velocity.y != 0:  # prevent from faster diagonal movement
             self.velocity *= 0.7071
         if pygame.mouse.get_pressed()[0] or keys[pygame.K_SPACE]:
-            self.get_mouse_angle()
-            now = pygame.time.get_ticks()
-            if now - self.last_shot > PROJECTILE_RATE:
-                self.last_shot = now
-                direction = vec(1, 0).rotate(-self.rotation)
-                position = self.position + PROJECTILE_OFFSET.rotate(-self.rotation)  # offset the projectile spawn point
-                Projectile(self.game, position, direction)
+            self.attack()
+
+    def attack(self):
+        self.get_mouse_angle()
+        now = pygame.time.get_ticks()
+        if now - self.last_shot > PROJECTILE_RATE:
+            self.last_shot = now
+            direction = vec(1, 0).rotate(-self.rotation)
+            position = self.position + PROJECTILE_OFFSET.rotate(-self.rotation)  # offset the projectile spawn point
+            Projectile(self.game, position, direction)
 
     def get_mouse_angle(self):  # calculate the angle between the character and the cursor
         mousex, mousey = pygame.mouse.get_pos()
@@ -111,11 +116,18 @@ class Player(pygame.sprite.Sprite):
         self.hit_rect.centery = self.position.y
         collide_with_rectangles(self, self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
+        if self.heal_amount > 0:
+            self.add_health(self.heal_amount)
 
     def add_health(self, amount):
-        self.health += amount
-        if self.health > self.max_health:
-            self.health = self.max_health
+        now = pygame.time.get_ticks()
+        if self.heal_amount == 0:
+            self.heal_amount = amount
+        if (self.health < self.health + self.heal_amount or self.health != self.max_health) and self.heal_amount > 0:
+            if now - self.last_heal > 500:
+                self.health += 10
+                self.heal_amount -= 10
+                self.last_heal = now
 
     def animate(self):
         now = pygame.time.get_ticks()

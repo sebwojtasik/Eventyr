@@ -24,19 +24,20 @@ def collide_with_rectangles(sprite, group, direction):
 
 
 class Spritesheet:  # utility class for loading and parsing spritesheets
-    def __init__(self, filename, alpha=False):
+    def __init__(self, filename, alpha=False, colorkey=BLACK):
         self.spritesheet = None
         self.filename = filename
         self.alpha = alpha
+        self.colorkey = colorkey
 
     def get_image(self, x, y, width, height):  # grab an image out of a larger spritesheet
         image = pygame.Surface((width, height))
         if self.alpha:
             self.spritesheet = pygame.image.load(self.filename).convert_alpha()
-            image.set_colorkey(BLACK)
+            image.set_colorkey(self.colorkey)
         else:
             self.spritesheet = pygame.image.load(self.filename).convert()
-            image.set_colorkey(WHITE)
+            image.set_colorkey(self.colorkey)
         image.blit(self.spritesheet, (0, 0), (x, y, width, height))
         image = pygame.transform.scale(image, (width // 2, height // 2))
         return image

@@ -40,7 +40,7 @@ PROJECTILE_SPREAD = 7
 PROJECTILE_DAMAGE = 10
 
 # mob settings
-MOBS_IMG = 'mobs.png'
+MOBS_IMG = 'slime.png'
 MOB_SPEED = [80, 100, 120]
 MOB_HEALTH = 100
 MOB_KNOCKBACK = 10
