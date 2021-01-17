@@ -29,6 +29,9 @@ class Game:
         sfx_folder = path.join(game_folder, 'sfx')
         music_folder = path.join(game_folder, 'music')
         self.map = TiledMap(path.join(map_folder, 'world0.tmx'))
+        self.title_font = path.join(img_folder, 'BreatheFire.otf')
+        self.dim_screen = pygame.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 120))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.player_spritesheet = Spritesheet(path.join(img_folder, PLAYER_IMG))
@@ -79,6 +82,7 @@ class Game:
                 Item(self, object_center, tile_object.name)
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
+        self.paused = False
 
     def run(self):  # game loop - set self.playing = False to end the game
         self.playing = True
@@ -86,7 +90,8 @@ class Game:
         while self.playing:
             self.delta_time = self.clock.tick(FPS) / 1000
             self.events()
-            self.update()
+            if not self.paused:
+                self.update()
             self.draw()
 
     @staticmethod
@@ -143,6 +148,9 @@ class Game:
         # HUD functions
         draw_player_health(self.screen, 10, 10, self.player.health, self.player.max_health, self.hearts_spritesheet)
         self.screen.blit(self.cursor, (pygame.mouse.get_pos()))
+        if self.paused:
+            self.screen.blit(self.dim_screen, (0, 0))
+            draw_text(self, 'Paused', self.title_font, 105, WHITE, WIDTH / 2, HEIGHT / 2, align='center')
         pygame.display.flip()
 
     def events(self):
@@ -155,6 +163,8 @@ class Game:
                     self.quit()
                 if event.key == pygame.K_h:  # enable debug mode
                     self.draw_debug = not self.draw_debug
+                if event.key == pygame.K_p:
+                    self.paused = not self.paused
 
     def show_start_screen(self):
         pass
