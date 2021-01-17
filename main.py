@@ -9,6 +9,7 @@ from mobs import *
 from tilemap import *
 from items import *
 from hud import *
+import pyscroll
 
 
 class Game:
@@ -25,7 +26,9 @@ class Game:
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'img')
         map_folder = path.join(game_folder, 'maps')
-        self.map = TiledMap(path.join(map_folder, 'world1.tmx'))
+        sfx_folder = path.join(game_folder, 'sfx')
+        music_folder = path.join(game_folder, 'music')
+        self.map = TiledMap(path.join(map_folder, 'world0.tmx'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.player_spritesheet = Spritesheet(path.join(img_folder, PLAYER_IMG))
@@ -34,10 +37,27 @@ class Game:
         self.cursor = pygame.image.load(path.join(img_folder, CURSOR_IMG)).convert_alpha()
         self.cursor = pygame.transform.scale(self.cursor, (CURSOR_SIZE, CURSOR_SIZE))
         self.hearts_spritesheet = Spritesheet(path.join(img_folder, HEARTS_IMG), True)
+        # item loading
         self.item_images = {}
         for item in ITEM_IMAGES:
             self.item_images[item] = pygame.image.load(path.join(img_folder, ITEM_IMAGES[item])).convert_alpha()
-
+        # music loading
+        pygame.mixer.music.load(path.join(music_folder, 'Windless Slopes.mp3'))
+        for song in BG_MUSIC:
+            pygame.mixer.music.queue(path.join(music_folder, song))
+        # sound loading
+        self.sound_effects = {}
+        for key in SOUND_EFFECTS:
+            if isinstance(SOUND_EFFECTS[key], str):
+                self.sound_effects[key] = pygame.mixer.Sound(path.join(sfx_folder, SOUND_EFFECTS[key]))
+            else:
+                self.sound_effects[key] = []
+                for sound in SOUND_EFFECTS[key]:
+                    self.sound_effects[key].append(pygame.mixer.Sound(path.join(sfx_folder, sound)))
+        #  set_volume(...) to change volume
+        self.slime_idle_sounds = []
+        for sound in SLIME_IDLE_SOUNDS:
+            self.slime_idle_sounds.append(pygame.mixer.Sound(path.join(sfx_folder, sound)))
 
     def new(self):  # initialize all variables and do all the setup for a new game
         self.all_sprites = pygame.sprite.LayeredUpdates()
@@ -60,9 +80,9 @@ class Game:
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
 
-    def run(self):
-        # game loop - set self.playing = False to end the game
+    def run(self):  # game loop - set self.playing = False to end the game
         self.playing = True
+        pygame.mixer.music.play(loops=1)
         while self.playing:
             self.delta_time = self.clock.tick(FPS) / 1000
             self.events()
@@ -87,6 +107,8 @@ class Game:
         # mobs hit player
         hits = pygame.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
+            if random() < 0.75:  # play idle sounds
+                choice(self.sound_effects['player_hit']).play()
             self.player.health -= MOB_DAMAGE
             hit.velocity = vec(0, 0)
             if self.player.health <= 0:
@@ -97,7 +119,7 @@ class Game:
         hits = pygame.sprite.groupcollide(self.mobs, self.projectiles, False, True)
         for hit in hits:
             hit.health -= PROJECTILE_DAMAGE
-            hit.velocity = vec(-50, -50)
+            hit.velocity = vec(0, 0)
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -107,7 +129,6 @@ class Game:
 
     def draw(self):
         pygame.display.set_caption('Eventyr WIP - FPS: {:.1f}'.format(self.clock.get_fps()))
-        # self.draw_grid()
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))  # draw map
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob):
@@ -116,6 +137,7 @@ class Game:
             if self.draw_debug:
                 pygame.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.hit_rect), 1)
         if self.draw_debug:
+            self.draw_grid()
             for wall in self.walls:
                 pygame.draw.rect(self.screen, RED, self.camera.apply_rect(wall.rect), 1)
         # HUD functions

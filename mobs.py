@@ -1,6 +1,6 @@
 import pygame
 from settings import *
-from random import choice
+from random import choice, random
 from sprites import *
 
 
@@ -60,6 +60,8 @@ class Mob(pygame.sprite.Sprite):
             self.hit_rect.centery = self.position.y
             collide_with_rectangles(self, self.game.walls, 'y')
             self.rect.center = self.hit_rect.center
+            if random() < 0.0075:  # play idle sounds
+                choice(self.game.slime_idle_sounds).play()
         if self.health <= 0:
             self.kill()
 

@@ -4,6 +4,7 @@ from sprites import *
 from random import uniform
 vec = pygame.math.Vector2
 
+
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, game, pos, direction):
         self._layer = PROJECTILE_LAYER
@@ -19,6 +20,7 @@ class Projectile(pygame.sprite.Sprite):
         spread = uniform(-PROJECTILE_SPREAD, PROJECTILE_SPREAD)
         self.velocity = direction.rotate(spread) * PROJECTILE_SPEED
         self.spawn_time = pygame.time.get_ticks()
+        self.game.sound_effects['fireball'].play()
 
     def update(self):
         self.pos += self.velocity * self.game.delta_time

@@ -87,7 +87,7 @@ class Player(pygame.sprite.Sprite):
             self.animation_state = 'up_left'
         if self.velocity.x != 0 and self.velocity.y != 0:  # prevent from faster diagonal movement
             self.velocity *= 0.7071
-        if keys[pygame.K_SPACE]:
+        if pygame.mouse.get_pressed()[0] or keys[pygame.K_SPACE]:
             self.get_mouse_angle()
             now = pygame.time.get_ticks()
             if now - self.last_shot > PROJECTILE_RATE:
