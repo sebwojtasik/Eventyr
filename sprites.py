@@ -1,6 +1,6 @@
 import pygame
 from settings import *
-from tilemap import collide_hit_rect
+from utilities import collide_hit_rect
 
 
 def collide_with_rectangles(sprite, group, direction):

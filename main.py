@@ -11,8 +11,6 @@ from items import *
 from hud import *
 from utilities import *
 from gui import *
-import pyscroll
-
 
 class Game:
     def __init__(self):
@@ -31,12 +29,10 @@ class Game:
         sfx_folder = path.join(game_folder, 'sfx')
         music_folder = path.join(game_folder, 'music')
         self.logo_img = pygame.image.load(path.join(img_folder, 'logo.png'))
-        self.map = TiledMap(path.join(map_folder, 'world0.tmx'))
+        self.map = TiledMap(self, path.join(map_folder, 'world0.tmx'))
         self.title_font = path.join(img_folder, 'BreatheFire.otf')
         self.dim_screen = pygame.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 120))
-        self.map_img = self.map.make_map()
-        self.map_rect = self.map_img.get_rect()
         self.player_spritesheet = Spritesheet(path.join(img_folder, PLAYER_IMG), colorkey=WHITE)
         self.mobs_spritesheet = Spritesheet(path.join(img_folder, MOBS_IMG), alpha=False, colorkey=BLACK)
         self.projectile_img = pygame.image.load(path.join(img_folder, PROJECTILE_IMG)).convert_alpha()
@@ -71,19 +67,17 @@ class Game:
         self.mobs = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
-        for tile_object in self.map.tmxdata.objects:  # spawn all the game objects from map data
+        for tile_object in self.map.tmx_data.objects:  # spawn all the game objects from map data
             object_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
             if tile_object.name == 'player':
                 self.player = Player(self, object_center.x, object_center.y)
-            if tile_object.name == 'building' or tile_object.name == 'edge':
-                Wall(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
-            if tile_object.name == 'tree':
+                self.map.group.add(self.player)
+            if tile_object.name == 'wall':
                 Wall(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == 'slime':
-                Mob(self, object_center.x, object_center.y)
+                self.map.group.add(Mob(self, object_center.x, object_center.y))
             if tile_object.type == 'item':
-                Item(self, object_center, tile_object.name)
-        self.camera = Camera(self.map.width, self.map.height)
+                self.map.group.add(Item(self, object_center, tile_object.name))
         self.draw_debug = False
         self.paused = False
 
@@ -105,7 +99,6 @@ class Game:
     def update(self):
         # update portion of the game loop
         self.all_sprites.update()
-        self.camera.update(self.player)
         # player hits items
         hits = pygame.sprite.spritecollide(self.player, self.items, False)
         for hit in hits:
@@ -137,17 +130,17 @@ class Game:
 
     def draw(self):
         pygame.display.set_caption('Eventyr WIP - FPS: {:.1f}'.format(self.clock.get_fps()))
-        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))  # draw map
+        # self.map.render(self.screen)
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob):
                 sprite.draw_mob_health_bar()
-            self.screen.blit(sprite.image, self.camera.apply(sprite))  # draw character
             if self.draw_debug:
-                pygame.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.hit_rect), 1)
+                pygame.draw.rect(self.screen, RED, self.map.apply_rect(sprite.hit_rect), 1)
         if self.draw_debug:
             self.draw_grid()
             for wall in self.walls:
-                pygame.draw.rect(self.screen, RED, self.camera.apply_rect(wall.rect), 1)
+                pygame.draw.rect(self.screen, RED, self.map.apply_rect(wall.rect), 1)
+        self.map.render(self.screen)
         # HUD functions
         draw_player_health(self.screen, 10, 10, self.player.health, self.player.max_health, self.hearts_spritesheet)
         if self.paused:

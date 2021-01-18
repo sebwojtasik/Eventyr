@@ -3,8 +3,10 @@ from settings import *
 from sprites import *
 from projectiles import *
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
+        pygame.sprite.Sprite.__init__(self)
         self._layer = PLAYER_LAYER
         self.groups = game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups)
@@ -99,11 +101,11 @@ class Player(pygame.sprite.Sprite):
             self.last_shot = now
             direction = vec(1, 0).rotate(-self.rotation)
             position = self.position + PROJECTILE_OFFSET.rotate(-self.rotation)  # offset the projectile spawn point
-            Projectile(self.game, position, direction)
+            self.game.map.group.add(Projectile(self.game, position, direction))
 
     def get_mouse_angle(self):  # calculate the angle between the character and the cursor
         mousex, mousey = pygame.mouse.get_pos()
-        self.rotation = (vec(mousex, mousey) - self.game.player.position - self.game.camera.position).angle_to(vec(1, 0))
+        self.rotation = (vec(mousex, mousey) - self.game.player.position + self.game.map.map_layer.view_rect.topleft).angle_to(vec(1, 0))
 
     def update(self):
         self.animate()

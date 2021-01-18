@@ -11,7 +11,7 @@ class Mob(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.load_images()
-        self.image = game.mobs_spritesheet.get_image(8, 48, 47, 39).copy()
+        self.image = game.mobs_spritesheet.get_image(18, 37, 30, 27).copy()
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.hit_rect = self.rect.copy()
@@ -29,10 +29,9 @@ class Mob(pygame.sprite.Sprite):
         self.target = game.player
 
     def load_images(self):
-        self.jump_frames = [self.game.mobs_spritesheet.get_image(8, 48, 47, 39).copy(),
-                     self.game.mobs_spritesheet.get_image(72, 52, 47, 35).copy(),
-                     self.game.mobs_spritesheet.get_image(132, 56, 55, 31).copy(),
-                     self.game.mobs_spritesheet.get_image(200, 52, 47, 35).copy()]
+        self.jump_frames = [self.game.mobs_spritesheet.get_image(18, 37, 30, 27).copy(),
+                     self.game.mobs_spritesheet.get_image(18, 36, 30, 27).copy(),
+                     self.game.mobs_spritesheet.get_image(18, 33, 30, 27).copy()]
 
     def avoid_other_mobs(self):  # make mobs keep a distance from each other
         for mob in self.game.mobs:
@@ -47,7 +46,6 @@ class Mob(pygame.sprite.Sprite):
         if target_distance.length_squared() < MOB_DETECT_RADIUS**2:
             self.rotation = target_distance.angle_to(vec(1, 0))
             # self.image = pygame.transform.rotate(self.image, self.rotation) #  rotating of the mob toward the player
-            self.image.set_colorkey(WHITE)
             self.rect.center = self.position
             self.acceleration = vec(1, 0).rotate(-self.rotation)
             self.avoid_other_mobs()
@@ -84,4 +82,4 @@ class Mob(pygame.sprite.Sprite):
         self.health_bar = pygame.Rect(0, 0, width, 5)
         if self.health < self.max_health:  # only draw once monster has less than 100 HP
             pygame.draw.rect(self.image, col, self.health_bar)
-            pygame.draw.rect(self.image, BLACK, self.health_bar, 2)
+            pygame.draw.rect(self.image, DARKGREY, self.health_bar, 1)

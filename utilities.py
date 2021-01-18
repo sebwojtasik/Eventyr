@@ -24,3 +24,6 @@ def draw_text(self, text, font_name, size, color, x, y, align="nw"):
     if align == "center":
         text_rect.center = (x, y)
     self.screen.blit(text_surface, text_rect)
+
+def collide_hit_rect(one, two):
+    return one.hit_rect.colliderect(two.rect)
