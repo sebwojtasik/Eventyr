@@ -9,6 +9,8 @@ from mobs import *
 from tilemap import *
 from items import *
 from hud import *
+from utilities import *
+from gui import *
 import pyscroll
 
 
@@ -28,6 +30,7 @@ class Game:
         map_folder = path.join(game_folder, 'maps')
         sfx_folder = path.join(game_folder, 'sfx')
         music_folder = path.join(game_folder, 'music')
+        self.logo_img = pygame.image.load(path.join(img_folder, 'logo.png'))
         self.map = TiledMap(path.join(map_folder, 'world0.tmx'))
         self.title_font = path.join(img_folder, 'BreatheFire.otf')
         self.dim_screen = pygame.Surface(self.screen.get_size()).convert_alpha()
@@ -148,8 +151,7 @@ class Game:
         # HUD functions
         draw_player_health(self.screen, 10, 10, self.player.health, self.player.max_health, self.hearts_spritesheet)
         if self.paused:
-            self.screen.blit(self.dim_screen, (0, 0))
-            draw_text(self, 'Paused', self.title_font, 105, WHITE, WIDTH / 2, HEIGHT / 2, align='center')
+            self.show_pause_menu()
         self.screen.blit(self.cursor, (pygame.mouse.get_pos()))
         pygame.display.flip()
 
@@ -167,10 +169,14 @@ class Game:
                     self.paused = not self.paused
 
     def show_start_screen(self):
-        pass
+        show_main_menu(self)
 
     def show_go_screen(self):
         pass
+
+    def show_pause_menu(self):
+        self.screen.blit(self.dim_screen, (0, 0))
+        draw_text(self, 'Paused', self.title_font, 105, WHITE, WIDTH / 2, HEIGHT / 2, align='center')
 
 
 # create the game object

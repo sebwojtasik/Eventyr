@@ -12,7 +12,7 @@ YELLOW = (255, 255, 0)
 BROWN = (106, 55, 5)
 
 # game settings
-FULLSCREEN = True
+FULLSCREEN = False
 WIDTH = 1024
 HEIGHT = 768
 FPS = 60
