@@ -12,6 +12,7 @@ from hud import *
 from utilities import *
 from gui import *
 
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -21,6 +22,7 @@ class Game:
         pygame.key.set_repeat(500, 100)
         pygame.mouse.set_visible(False)  # hide the cursor
         self.load_data()
+        self.pause_menu_current_option = 0
 
     def load_data(self):
         game_folder = path.dirname(__file__)
@@ -31,6 +33,7 @@ class Game:
         self.logo_img = pygame.image.load(path.join(img_folder, 'logo.png'))
         self.map = TiledMap(self, path.join(map_folder, 'world0.tmx'))
         self.title_font = path.join(img_folder, 'BreatheFire.otf')
+        self.secondary_font = path.join(img_folder, 'Minecraft.ttf')
         self.dim_screen = pygame.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 120))
         self.player_spritesheet = Spritesheet(path.join(img_folder, PLAYER_IMG), colorkey=WHITE)
@@ -144,7 +147,7 @@ class Game:
         # HUD functions
         draw_player_health(self.screen, 10, 10, self.player.health, self.player.max_health, self.hearts_spritesheet)
         if self.paused:
-            self.show_pause_menu()
+            show_pause_menu(self)  # -> gui.py
         self.screen.blit(self.cursor, (pygame.mouse.get_pos()))
         pygame.display.flip()
 
@@ -154,22 +157,17 @@ class Game:
             if event.type == pygame.QUIT:
                 self.quit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.quit()
                 if event.key == pygame.K_h:  # enable debug mode
                     self.draw_debug = not self.draw_debug
-                if event.key == pygame.K_p:
+                if event.key == pygame.K_ESCAPE:
                     self.paused = not self.paused
 
     def show_start_screen(self):
-        show_main_menu(self)
+        self.menu = Menu(self, 'main_menu').update()
+        del self.menu
 
     def show_go_screen(self):
         pass
-
-    def show_pause_menu(self):
-        self.screen.blit(self.dim_screen, (0, 0))
-        draw_text(self, 'Paused', self.title_font, 105, WHITE, WIDTH / 2, HEIGHT / 2, align='center')
 
 
 # create the game object
