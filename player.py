@@ -92,9 +92,9 @@ class Player(pygame.sprite.Sprite):
         if self.velocity.x != 0 and self.velocity.y != 0:  # prevent from faster diagonal movement
             self.velocity *= 0.7071
         if pygame.mouse.get_pressed()[0] or keys[pygame.K_SPACE]:
-            self.attack()
+            self.magic_attack()
 
-    def attack(self):
+    def magic_attack(self):
         self.get_mouse_angle()
         now = pygame.time.get_ticks()
         if now - self.last_shot > PROJECTILE_RATE:

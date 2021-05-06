@@ -1,0 +1,12 @@
+TODO:
+- melee weapons
+- make enemies, maps and items object oriented
+- inventory system (slot for potions)
+- mob pathfinding and idle behavior (decision trees)
+- quest system
+- dialog system
+- map loading triggers (for going inside buildings etc.)
+- saving/loading system
+- more assets
+- simple story
+- some world design
